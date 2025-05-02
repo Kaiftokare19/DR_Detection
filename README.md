@@ -38,8 +38,8 @@ Manual diagnosis of DR via fundus images is time-consuming, expertise-dependent,
 
 - **Classification** using ViT (Severity Levels: 0–4)
 - **Segmentation** using UNet (Lesion Types: MA, HEM, SE, EX)
-- **Backend**: Flask-based API for inference
-- **Frontend**: Flutter app for user upload & result display
+- **Backend**: Python & Hugging face API for inference
+- **Frontend**: Flask app for user upload & result display
 
 ---
 
