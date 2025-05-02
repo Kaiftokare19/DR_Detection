@@ -88,9 +88,9 @@ Manual diagnosis of DR via fundus images is time-consuming, expertise-dependent,
 
 ## 👨‍💻 Authors
 
+- **Kaif Nasim Tokare** – [211755]
 - Mohammad Aqeel Memon – [211721]
 - Mohammed Irfan Siddiqui – [211751]
-- **Kaif Nasim Tokare** – [211755]
 
 Supervisor: **Prof. Faiz Rangari**  
 College: M.H. Saboo Siddik College of Engineering
