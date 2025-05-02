@@ -68,7 +68,7 @@ Due to the large size of the deep learning models used in this project (ViT, UNe
 
 ---
 
-## 📱 Frontend (Flutter App)
+## 📱 Frontend
 
 - Upload fundus image
 - View DR severity and lesion map
