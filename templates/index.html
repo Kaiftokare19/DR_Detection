@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetic Retinopathy Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        h2 {
+            color: #3498db;
+            margin: 25px 0 15px 0;
+            font-size: 1.8rem;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .info-box {
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .upload-section {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border: 1px dashed #ccc;
+        }
+        
+        /* Drag and Drop Styling */
+        .drag-drop-container {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: rgba(52, 152, 219, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .drag-drop-container.highlight {
+            background-color: rgba(52, 152, 219, 0.15);
+            border-color: #2980b9;
+        }
+        
+        .drag-drop-icon {
+            font-size: 48px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .drag-drop-text {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #555;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+        
+        .file-input-label:hover {
+            background-color: #2980b9;
+        }
+        
+        input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        input[type="submit"] {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        input[type="submit"]:hover {
+            background-color: #27ae60;
+        }
+        
+        .file-name {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* New inline image preview styling */
+        .image-preview {
+            max-width: 100%;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+            position: relative;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .image-preview .remove-image {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        /* Disclaimer Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Transparent background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent background */
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto; /* Keep scrolling capability */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .modal-content::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .disclaimer-title {
+            color: #e74c3c;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .disclaimer-text {
+            margin-bottom: 20px;
+        }
+        
+        .disclaimer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .accept-button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .accept-button:hover {
+            background-color: #27ae60;
+        }
+        
+        .decline-button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .decline-button:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Hide main content until disclaimer accepted */
+        .main-content {
+            display: none;
+        }
+        
+        /* Loading Animation Styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        
+        /* What is Fundus Image section */
+        .fundus-info {
+            background-color: #f0f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #34c6eb;
+        }
+        
+        .fundus-info h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+            
+            .upload-section {
+                padding: 15px;
+            }
+            
+            .drag-drop-text {
+                font-size: 1rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .file-input-label {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .disclaimer-buttons {
+                flex-direction: column;
+            }
+            
+            .loading-spinner {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .loading-text {
+                font-size: 1rem;
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Disclaimer Modal -->
+    <div class="modal-overlay" id="disclaimer-modal">
+        <div class="modal-content">
+            <h2 class="disclaimer-title">Important Disclaimer</h2>
+            <div class="disclaimer-text">
+                <p><strong>Medical Disclaimer:</strong> The diabetic retinopathy detection system provided on this website is intended for informational purposes only and should not be used as a substitute for professional medical advice, diagnosis, or treatment.</p>
+                
+                <p>By using this system, you acknowledge and agree that:</p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>All results should be reviewed and confirmed by a qualified healthcare professional.</li>
+                    <li>This system does not establish a doctor-patient relationship.</li>
+                    <li>The accuracy of results depends on image quality and other factors.</li>
+                    <li>We do not claim ownership of any images uploaded to this system.</li>
+                    <li>We are not responsible for any decisions made based on the results provided.</li>
+                </ul>
+                
+                <p><strong>Liability Disclaimer:</strong> We do not assume any liability for the use or misuse of the information provided by this system. Users are solely responsible for seeking appropriate medical care.</p>
+                
+                <p><strong>Privacy Notice:</strong> Images uploaded for detection are processed securely. We do not store or use your images for any purpose other than providing the requested analysis.</p>
+            </div>
+            <div class="disclaimer-buttons">
+                <button class="accept-button" id="accept-disclaimer">I Accept</button>
+                <button class="decline-button" id="decline-disclaimer">I Decline</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Processing your image. Please wait...</div>
+    </div>
+    
+    <!-- Main Content (hidden until disclaimer accepted) -->
+    <div class="main-content" id="main-content">
+        <div class="container">
+            <header>
+                <h1>Diabetic Retinopathy Detection</h1>
+                <p>Diabetic Lesion Detection of Diabetic Retinpathy Using Fundus Images</p>
+            </header>
+            
+            <section>
+                <h2>About Diabetic Retinopathy</h2>
+                <p>Diabetic retinopathy is a diabetes complication that affects the eyes. It's caused by damage to the blood vessels of the retina, the light-sensitive tissue at the back of the eye.</p>
+                <p>Early detection helps prevent serious vision problems. Regular eye exams are critical for people with diabetes.</p>
+                
+                <div class="info-box">
+                    <p><strong>Did you know?</strong> According to research, approximately one-third of people with diabetes have some degree of diabetic retinopathy.</p>
+                </div>
+            </section>
+            
+            <section class="upload-section">
+                <h2>Upload Fundus Image</h2>
+                
+                <!-- What is a Fundus Image section -->
+                <div class="fundus-info">
+                    <h3>What is a Fundus Image?</h3>
+                    <p>A fundus image is a photograph of the back of your eye, including the retina, optic disc, macula, and blood vessels. Eye care professionals use these images to detect and monitor diseases like diabetic retinopathy. Fundus photos are typically taken with a special camera during an eye examination.</p>
+                </div>
+                
+                <p>Upload a clear image of your fundus scan for analysis:</p>
+                
+                <form method="POST" enctype="multipart/form-data" id="upload-form">
+                    <div class="drag-drop-container" id="drag-drop-area">
+                        <div class="drag-drop-content" id="drag-drop-content">
+                            <div class="drag-drop-icon">📁</div>
+                            <div class="drag-drop-text">Drag & drop your fundus image here</div>
+                            <div class="button-group">
+                                <label class="file-input-label" for="file-input">
+                                    Browse Files
+                                </label>
+                                <label class="file-input-label" id="camera-button">
+                                    Take Photo
+                                </label>
+                            </div>
+                            <input type="file" name="file" id="file-input" accept="image/*" required>
+                            <div class="file-name" id="file-name">No file chosen</div>
+                        </div>
+                        
+                        <!-- Inline Image Preview -->
+                        <div class="image-preview" id="image-preview">
+                            <div class="remove-image" id="remove-image">✕</div>
+                            <img id="preview-img" src="/api/placeholder/400/320" alt="Image preview">
+                        </div>
+                    </div>
+                    
+                    <input type="submit" value="Upload for Analysis" id="submit-button">
+                </form>
+            </section>
+            
+            <footer>
+                <p>© 2025 Diabetic Retinopathy Detection System | Always consult with healthcare professionals</p>
+            </footer>
+        </div>
+    </div>
+    
+    <script>
+        // Disclaimer functionality
+        const disclaimerModal = document.getElementById('disclaimer-modal');
+        const acceptButton = document.getElementById('accept-disclaimer');
+        const declineButton = document.getElementById('decline-disclaimer');
+        const mainContent = document.getElementById('main-content');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        
+        // Clear previous acceptance to always show disclaimer on refresh
+        localStorage.removeItem('disclaimerAccepted');
+        
+        // Show disclaimer and hide main content by default
+        disclaimerModal.style.display = 'flex';
+        mainContent.style.display = 'none';
+        
+        acceptButton.addEventListener('click', function() {
+            localStorage.setItem('disclaimerAccepted', 'true');
+            disclaimerModal.style.display = 'none';
+            mainContent.style.display = 'block';
+        });
+        
+        declineButton.addEventListener('click', function() {
+            alert('You must accept the disclaimer to use this service.');
+        });
+        
+        // Handle file input and preview
+        const fileInput = document.getElementById('file-input');
+        const fileName = document.getElementById('file-name');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImg = document.getElementById('preview-img');
+        const dragDropArea = document.getElementById('drag-drop-area');
+        const dragDropContent = document.getElementById('drag-drop-content');
+        const cameraButton = document.getElementById('camera-button');
+        const removeImage = document.getElementById('remove-image');
+        const uploadForm = document.getElementById('upload-form');
+        const submitButton = document.getElementById('submit-button');
+        
+        // Camera functionality - updated to properly handle mobile and laptop
+        let videoStream = null;
+        
+        // Check if camera is available - improved function
+        async function checkCameraAvailability() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.log("Media devices API not supported");
+                return false;
+            }
+            
+            try {
+                // Just test if we can access the camera
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                
+                // Clean up the test stream immediately
+                stream.getTracks().forEach(track => track.stop());
+                return true;
+            } catch (err) {
+                console.log("Camera access error:", err);
+                return false;
+            }
+        }
+        
+        // Create video element for camera capture
+        function createCameraInterface() {
+            // First check if an interface already exists and remove it
+            const existingInterface = document.getElementById('camera-interface');
+            if (existingInterface) {
+                existingInterface.remove();
+            }
+            
+            // Create camera elements
+            const cameraInterface = document.createElement('div');
+            cameraInterface.id = 'camera-interface';
+            cameraInterface.style.position = 'fixed';
+            cameraInterface.style.top = '0';
+            cameraInterface.style.left = '0';
+            cameraInterface.style.width = '100%';
+            cameraInterface.style.height = '100%';
+            cameraInterface.style.backgroundColor = 'rgba(0,0,0,0.9)';
+            cameraInterface.style.zIndex = '1001';
+            cameraInterface.style.display = 'flex';
+            cameraInterface.style.flexDirection = 'column';
+            cameraInterface.style.alignItems = 'center';
+            cameraInterface.style.justifyContent = 'center';
+            
+            const video = document.createElement('video');
+            video.id = 'camera-video';
+            video.style.maxWidth = '100%';
+            video.style.maxHeight = '70vh';
+            video.style.borderRadius = '8px';
+            video.autoplay = true;
+            video.playsInline = true; // Important for iOS
+            
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.display = 'flex';
+            buttonContainer.style.marginTop = '20px';
+            buttonContainer.style.gap = '10px';
+            
+            const captureBtn = document.createElement('button');
+            captureBtn.textContent = 'Capture Photo';
+            captureBtn.style.padding = '10px 20px';
+            captureBtn.style.backgroundColor = '#2ecc71';
+            captureBtn.style.color = 'white';
+            captureBtn.style.border = 'none';
+            captureBtn.style.borderRadius = '5px';
+            captureBtn.style.cursor = 'pointer';
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.style.padding = '10px 20px';
+            cancelBtn.style.backgroundColor = '#e74c3c';
+            cancelBtn.style.color = 'white';
+            cancelBtn.style.border = 'none';
+            cancelBtn.style.borderRadius = '5px';
+            cancelBtn.style.cursor = 'pointer';
+            
+            buttonContainer.appendChild(captureBtn);
+            buttonContainer.appendChild(cancelBtn);
+            
+            cameraInterface.appendChild(video);
+            cameraInterface.appendChild(buttonContainer);
+            
+            document.body.appendChild(cameraInterface);
+            
+            // Setup event listeners
+            captureBtn.addEventListener('click', capturePhoto);
+            cancelBtn.addEventListener('click', closeCamera);
+            
+            return video;
+        }
+        
+        // Open camera
+        async function openCamera() {
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: 'environment', // Prefer back camera on mobile
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }
+                };
+                
+                videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+                const video = createCameraInterface();
+                video.srcObject = videoStream;
+            } catch (err) {
+                console.error("Error accessing camera:", err);
+                alert("Could not access the camera. Please check permissions or try uploading an image instead.");
+            }
+        }
+        
+        // Capture photo from stream
+        function capturePhoto() {
+            const video = document.getElementById('camera-video');
+            if (!video || !videoStream) return;
+            
+            // Create canvas to capture the frame
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            // Convert to file/blob
+            canvas.toBlob(function(blob) {
+                const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+                
+                // Create a FileList-like object
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                
+                // Update preview
+                handleFiles(fileInput.files);
+                
+                // Close camera
+                closeCamera();
+            }, 'image/jpeg', 0.95);
+        }
+        
+        // Close camera and clean up
+        function closeCamera() {
+            const cameraInterface = document.getElementById('camera-interface');
+            if (cameraInterface) {
+                cameraInterface.remove();
+            }
+            
+            // Stop all video tracks
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+        }
+        
+        // Camera button click event - Updated implementation
+        cameraButton.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const hasCamera = await checkCameraAvailability();
+            if (hasCamera) {
+                openCamera();
+            } else {
+                alert("No camera detected on your device or camera access is denied. Please check your browser permissions or upload an image file instead.");
+            }
+        });
+        
+        // Form submission event - Show loading overlay
+        uploadForm.addEventListener('submit', function(e) {
+            // Only show loading if there's a file selected
+            if (fileInput.files && fileInput.files[0]) {
+                e.preventDefault(); // Prevent default form submission
+                
+                // Show loading overlay
+                loadingOverlay.style.display = 'flex';
+                
+                // Simulate processing time (you would remove this in production)
+                // and replace with actual form submission
+                setTimeout(function() {
+                    uploadForm.submit(); // Submit the form after showing loading animation
+                }, 500);
+            }
+        });
+        
+        // File input change event
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+        
+        // Remove image button click event
+        removeImage.addEventListener('click', function(e) {
+            e.stopPropagation();
+            clearImagePreview();
+        });
+        
+        // Function to clear the image preview
+        function clearImagePreview() {
+            imagePreview.style.display = 'none';
+            dragDropContent.style.display = 'block';
+            fileInput.value = '';
+            fileName.textContent = 'No file chosen';
+        }
+        
+        // Drag and drop events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dragDropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dragDropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dragDropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dragDropArea.classList.add('highlight');
+        }
+        
+        function unhighlight() {
+            dragDropArea.classList.remove('highlight');
+        }
+        
+        dragDropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+        
+        function handleFiles(files) {
+            if (files && files[0]) {
+                fileName.textContent = files[0].name;
+                
+                // Image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    dragDropContent.style.display = 'none';
+                }
+                reader.readAsDataURL(files[0]);
+            } else {
+                clearImagePreview();
+            }
+        }
+        
+        // Click on drag area to open file dialog
+        dragDropArea.addEventListener('click', function(e) {
+            if ((e.target === dragDropArea || 
+                e.target.classList.contains('drag-drop-text') || 
+                e.target.classList.contains('drag-drop-icon')) && 
+                imagePreview.style.display !== 'block') {
+                fileInput.click();
+            }
+        });
+    </script>
+</body>
+</html>
