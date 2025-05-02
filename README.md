@@ -1,7 +1,7 @@
 # Diabetic Lesion Detection in Diabetic Retinopathy Using Fundus Images
 
-![Project Banner](images/banner1.png)
-![Output Sample](images/output2.png)
+![Project Banner](Images&Report/landingpage.png)
+![Output Sample](Images&Report/upload.png)
 
 ## 🧠 Project Summary
 
@@ -61,8 +61,10 @@ Due to the large size of the deep learning models used in this project (ViT, UNe
 
 ## 📷 Sample Outputs
 
-![Mild DR](images/mild_dr_output.png)
-![Severe DR](images/severe_dr_output.png)
+![Results](Images&Report/results2.png)
+![Detection](Images&Report/detection.png)
+![Consultation](Images&Report/advice.png)
+![Generated Report](Images&Report/report.png)
 
 ---
 
