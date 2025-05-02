@@ -66,7 +66,7 @@ Manual diagnosis of DR via fundus images is time-consuming, expertise-dependent,
 ![Results](Images&Report/results2.png)
 ![Detection](Images&Report/detection.png)
 ![Consultation](Images&Report/advice.png)
-![Generated Report](Images&Report/report.png)
+- **Also Checkout the Generated report from "Images&Report/IDRiD_01_Report" which gives all the necessary data to the user, through which the user can consult the doctor**
 
 ---
 
