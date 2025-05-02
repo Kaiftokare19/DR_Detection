@@ -27,7 +27,6 @@ Manual diagnosis of DR via fundus images is time-consuming, expertise-dependent,
 ## 📊 Datasets Used
 
 - **APTOS 2019**
-- **MESSIDOR**
 - **IDRiD**
 
 > Augmentation expanded dataset size to 50,000+ samples for training.
