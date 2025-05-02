@@ -52,11 +52,14 @@ Manual diagnosis of DR via fundus images is time-consuming, expertise-dependent,
 
 ---
 
-📦 Model Access
-Due to the large size of the deep learning models used in this project (ViT, UNet, EfficientNet), they are not included in this repository directly.
+## 📦 Model Access
 
-👉 All pre-trained models, weights, and inference configurations are available on Hugging Face:
-🔗 [Visit Hugging Face Model Hub](https://huggingface.co/spaces/doomslayer1434/DR_DISEASE_DETECTION/tree/main)
+- Due to the large size of the deep learning models used in this project (ViT, UNet, EfficientNet), they are not included in this repository directly.
+
+-👉 All pre-trained models, weights, and inference configurations are available on Hugging Face:
+**🔗 [Visit Hugging Face Model Hub](https://huggingface.co/spaces/doomslayer1434/DR_DISEASE_DETECTION/tree/main)
+
+---
 
 ## 📷 Sample Outputs
 
