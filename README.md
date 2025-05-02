@@ -1,7 +1,7 @@
 # Diabetic Lesion Detection in Diabetic Retinopathy Using Fundus Images
 
 ![Project Banner](Images&Report/landingpage.png)
-![Output Sample](Images&Report/upload.png)
+![Output Sample](Images&Report/Upload.png)
 
 ## 🧠 Project Summary
 
